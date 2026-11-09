@@ -82,8 +82,12 @@ func window(free []Interval, earliest, deadline time.Time) []Interval {
 }
 
 // fit returns the pieces for the task in the given slots, or nil if it does
-// not fit.
+// not fit. A task is split only when it has a minimum chunk and is longer
+// than that chunk.
 func fit(t Task, slots []Interval) []Interval {
+	if t.MinChunk > 0 && t.Estimate > t.MinChunk {
+		return fitSplit(t, slots)
+	}
 	return fitWhole(t, slots)
 }
 
