@@ -104,7 +104,7 @@ Each one should land as several small commits with tests.
   deadline passed, no estimate).
 - Unit tests for interval arithmetic and placement.
 
-### 2. Scenarios and property tests
+### 2. Scenarios and property tests (done)
 
 - `testdata/scenarios/`: each scenario is an input file and an expected
   schedule, both in the JSON format under Decisions. Start with: empty day, fully booked day, deadline before the only free slot,

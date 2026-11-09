@@ -3,9 +3,9 @@
 A constraint-based day planner. It takes a task list and a calendar, produces a
 timeboxed schedule, and replans when the day does not go to plan.
 
-Status: milestone 1 (solver core) is implemented. `docs/PLAN.md` has the build
-order and the design decisions already made. Start at the first unfinished
-milestone.
+Status: milestones 1 and 2 (solver core, scenarios and property tests) are
+implemented. `docs/PLAN.md` has the build order and the design decisions
+already made. Start at the first unfinished milestone.
 
 ## What this is not
 
@@ -26,10 +26,11 @@ daysolve is not a task manager, and the code must never drift into one.
 
 ```
 solver/              pure scheduling engine, no I/O, no time.Now()
+scenario/            JSON form of problems and schedules; golden tests
 input/taskjson/      task source: JSON task file
 input/ics/           calendar source: ICS fixed events
 cmd/daysolve/        CLI
-testdata/scenarios/  input + expected-schedule fixtures
+testdata/scenarios/  <name>/problem.json + expected <name>/schedule.json
 docs/PLAN.md         milestones and design notes
 ```
 
@@ -77,3 +78,5 @@ docs/PLAN.md         milestones and design notes
 - Small commits, one logical change each, with tests in the same commit.
 - Run before every commit: `go vet ./... && go test ./...`
 - Add a scenario fixture for every bug fixed.
+- After `go test ./scenario -update`, review every changed `schedule.json` by
+  hand before committing it.
