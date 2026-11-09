@@ -1,0 +1,11 @@
+{
+  "day": {
+    "zone": "Europe/London",
+    "start": "2026-11-10T09:00:00Z",
+    "end": "2026-11-10T17:00:00Z"
+  },
+  "tasks": [
+    {"id": "report", "title": "Write report", "estimate": "1h30m"},
+    {"id": "inbox", "title": "Clear inbox", "estimate": "30m"}
+  ]
+}
