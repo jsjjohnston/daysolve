@@ -12,17 +12,65 @@ longer fits.
 
 | Type | Fields |
 |---|---|
-| `Task` | ID, title, estimate, priority, optional deadline, optional earliest start, minimum chunk (for splitting) |
+| `Task` | ID, title, effective estimate, priority, optional deadline, optional earliest start, optional minimum chunk (for splitting) |
 | `FixedEvent` | start, end, title. Comes from the calendar and never moves |
-| `Day` | work start, work end, breaks, location |
+| `Day` | work start, work end, breaks, buffer (default 0), location |
 | `Box` | task ID, start, end |
 | `Schedule` | boxes, plus unscheduled tasks each with a reason |
 
-Open questions to settle while building milestone 1:
+## Decisions
 
-- Are tasks splittable by default, or only when a minimum chunk is set?
-- Is priority a number or an ordering of the input list?
-- How much buffer, if any, goes between boxes?
+These were open questions. They are settled unless a milestone proves one wrong;
+change the decision here in the same commit that changes the code.
+
+### Solver
+
+- **Splitting.** A task stays whole unless it has a minimum chunk. A split task
+  has no piece shorter than the minimum chunk, including the last piece.
+- **Priority.** A number, lower is more important. Readers map their own scheme
+  onto it (todo.txt `(A)` = 1 … `(Z)` = 26, no priority = 27).
+- **Ordering.** Deadline, then priority, then input order. Input order is the
+  final tie-break, so the order is total and the output is deterministic.
+- **Buffer.** A `Day` setting, default 0. It applies between two boxes and
+  between a box and a fixed event.
+- **Effective estimate.** The solver receives one duration per task and treats
+  it as exact. The caller computes it: raw estimate, times the calibration
+  factor (milestone 5), minus time already spent (milestone 4). Invariant 5 is
+  stated against this value.
+- **Replanning and the past.** Completed and in-progress work before "now" is
+  input. The solver only produces boxes that start at or after "now".
+
+### Inputs
+
+- **Task ID.** An explicit `id:` tag wins. Otherwise the ID is a short hash of
+  the task text with the completion mark, priority, dates and `key:value` tags
+  removed. Two tasks with the same hash get `-2`, `-3` … in file order. Line
+  numbers are never used, because they shift when the file is edited.
+- **No estimate.** A task without `est:` is returned unscheduled with the reason
+  "no estimate". The reader never guesses a duration.
+- **Date-only deadline.** `due:2026-11-10` means the end of working hours on
+  that date, in the `Day` location. A deadline before the planned day makes the
+  task unscheduled with the reason "deadline passed".
+- **Clock times on the command line.** `--now 14:20` is read in the `Day`
+  location on the planned date. A time that does not exist or occurs twice
+  because of a DST change is rejected with a message asking for an offset
+  (`14:20+01:00`).
+- **ICS scope.** Read `VEVENT`s with UTC or `TZID` times. Ignore all-day,
+  cancelled, declined and `TRANSP:TRANSPARENT` events. A recurring event
+  (`RRULE`) that the reader cannot expand is an error, never a silent skip.
+  Recurrence is where a dependency may earn its place: decide at milestone 3,
+  after trying a real calendar export.
+
+### State
+
+- **Scenario and schedule format.** JSON that mirrors the domain types, times in
+  RFC 3339 with an offset, plus the IANA zone name on `Day`. The solver's
+  fixtures (milestone 2) use it directly, so they do not wait for the readers.
+- **Where replan state lives.** `plan` writes the schedule to a JSON file
+  (`--out`, default `.daysolve/<date>.json`). `replan` reads that file.
+- **What actually happened.** Completion is read from the task source (a
+  todo.txt line marked `x`). Partial progress is passed to `replan` as
+  `--spent <id>=30m`. daysolve never writes to the task source.
 
 ## Milestones
 
