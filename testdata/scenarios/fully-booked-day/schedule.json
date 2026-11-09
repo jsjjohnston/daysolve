@@ -1,0 +1,13 @@
+{
+  "boxes": [],
+  "unscheduled": [
+    {
+      "task_id": "report",
+      "reason": "no room"
+    },
+    {
+      "task_id": "inbox",
+      "reason": "no room"
+    }
+  ]
+}

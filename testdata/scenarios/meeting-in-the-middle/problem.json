@@ -1,0 +1,15 @@
+{
+  "day": {
+    "zone": "Europe/London",
+    "start": "2026-11-10T09:00:00Z",
+    "end": "2026-11-10T17:00:00Z"
+  },
+  "events": [
+    {"title": "Stand-up", "start": "2026-11-10T12:00:00Z", "end": "2026-11-10T13:00:00Z"}
+  ],
+  "tasks": [
+    {"id": "report", "title": "Write report", "estimate": "2h"},
+    {"id": "design", "title": "Design review notes", "estimate": "2h"},
+    {"id": "inbox", "title": "Clear inbox", "estimate": "30m"}
+  ]
+}

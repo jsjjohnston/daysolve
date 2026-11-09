@@ -1,0 +1,15 @@
+{
+  "boxes": [
+    {
+      "task_id": "inbox",
+      "start": "2026-11-10T09:00:00Z",
+      "end": "2026-11-10T09:30:00Z"
+    }
+  ],
+  "unscheduled": [
+    {
+      "task_id": "migration",
+      "reason": "no room"
+    }
+  ]
+}
