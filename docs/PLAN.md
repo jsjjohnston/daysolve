@@ -39,6 +39,10 @@ change the decision here in the same commit that changes the code.
   stated against this value.
 - **Replanning and the past.** Completed and in-progress work before "now" is
   input. The solver only produces boxes that start at or after "now".
+- **Unfinished tasks on replan.** A task that is not complete goes back into the
+  backlog with its remaining time. It is ordered against every other task by
+  the normal rules (deadline, priority, input order) and then placed. It keeps
+  no claim on its old slot and does not jump the queue because it was started.
 
 ### Inputs
 
@@ -107,8 +111,9 @@ Each one should land as several small commits with tests.
 
 - `daysolve replan --now 14:20 --spent <id>=30m`. Completed tasks come from the
   task source; the earlier schedule comes from the state file.
-- Everything before "now" is input and stays as it was. The remainder is solved
-  again with each task's remaining time.
+- Everything before "now" is input and stays as it was. Unfinished tasks return
+  to the backlog with their remaining time, are reprioritised against the other
+  tasks, and the rest of the day is solved again.
 - Output includes a diff: what moved, what dropped out of the day and why.
 
 ### 5. Estimate calibration
