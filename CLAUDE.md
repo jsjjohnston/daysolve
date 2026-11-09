@@ -57,6 +57,18 @@ docs/PLAN.md         milestones and design notes
 6. The solver never emits or changes a box that starts before "now". What
    happened before "now" is input, not output.
 
+## Wording
+
+- Never write the word "todo", in any case or as "to-do", anywhere in this
+  repo: code, comments, identifiers, file names, docs, fixtures and commit
+  messages. Product names that contain it are included. This line is the only
+  exception.
+- Say "task", "task list", "task manager" or "other task tools" instead.
+- Do not leave marker comments for unfinished work. Unfinished work goes in
+  `docs/PLAN.md` or an issue.
+- Check before every commit; it must print nothing:
+  `grep -rniE 'to-?do' --exclude-dir=.git --exclude=CLAUDE.md .`
+
 ## Working conventions
 
 - Build order is solver first, then fixtures, then CLI. Do not start an
