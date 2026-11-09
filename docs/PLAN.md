@@ -80,15 +80,16 @@ Each one should land as several small commits with tests.
 
 - Types above in `solver/`.
 - Free-interval calculation: working hours minus fixed events and breaks.
-- Greedy placement: order tasks by deadline then priority, first fit into free
-  intervals.
-- Unscheduled tasks returned with a reason (no room, deadline unreachable).
+- Greedy placement: order tasks by deadline, then priority, then input order;
+  first fit into free intervals.
+- Unscheduled tasks returned with a reason (no room, deadline unreachable,
+  deadline passed, no estimate).
 - Unit tests for interval arithmetic and placement.
 
 ### 2. Scenarios and property tests
 
-- `testdata/scenarios/`: each scenario is an input file and an expected schedule.
-  Start with: empty day, fully booked day, deadline before the only free slot,
+- `testdata/scenarios/`: each scenario is an input file and an expected
+  schedule, both in the JSON format under Decisions. Start with: empty day, fully booked day, deadline before the only free slot,
   task longer than any free interval, meeting in the middle of the day.
 - Property tests with `rapid`: generate random days and task sets, assert the
   six invariants in `CLAUDE.md`.
@@ -98,13 +99,16 @@ Each one should land as several small commits with tests.
 
 - `daysolve plan --tasks todo.txt --calendar day.ics --date 2026-11-10`
 - todo.txt reader (estimate and deadline from tags such as `est:45m due:2026-11-10`).
-- ICS reader for fixed events.
+- ICS reader for fixed events, within the scope under Decisions.
 - Plain-text schedule output, plus `--json`.
+- `plan` writes the schedule state file that `replan` reads.
 
 ### 4. Replanning
 
-- `daysolve replan --now 14:20`, with what actually happened so far.
-- Everything before "now" is frozen. The remainder is solved again.
+- `daysolve replan --now 14:20 --spent <id>=30m`. Completed tasks come from the
+  task source; the earlier schedule comes from the state file.
+- Everything before "now" is input and stays as it was. The remainder is solved
+  again with each task's remaining time.
 - Output includes a diff: what moved, what dropped out of the day and why.
 
 ### 5. Estimate calibration
@@ -112,6 +116,8 @@ Each one should land as several small commits with tests.
 - Append-only log of estimated versus actual duration per task.
 - Per-tag correction factor applied to future estimates, shown in the output so
   the adjustment is never hidden.
+- The factor is applied by the caller when it computes the effective estimate.
+  The solver does not know calibration exists.
 
 ### 6. Calendar write-back
 
@@ -121,7 +127,9 @@ Each one should land as several small commits with tests.
 ### Later
 
 - Replace greedy placement with a search (backtracking or a CP approach) and
-  benchmark both on the scenario set.
+  benchmark both on the scenario set. Greedy first fit can leave a task
+  unscheduled that a different order would place, mostly when earliest-start
+  times are involved; keep a scenario that shows it.
 - Energy levels: prefer deep work in the user's stated high-energy hours.
 - More task sources: Markdown checklists, GitHub issues, Todoist.
 
