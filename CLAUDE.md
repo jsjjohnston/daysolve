@@ -11,7 +11,7 @@ design decisions already made. Start at the first unfinished milestone.
 daysolve is not a to-do app, and the code must never drift into one.
 
 - It does not store, create, edit or complete tasks. Tasks are read from sources
-  that already exist (todo.txt, Markdown, later GitHub issues or Todoist).
+  that already exist (a JSON task file first, later Markdown or GitHub issues).
 - It has no task-management UI. The only interfaces are the Go package and a CLI.
 - If a feature request amounts to task CRUD, it belongs in the user's task tool.
 
@@ -25,7 +25,7 @@ daysolve is not a to-do app, and the code must never drift into one.
 
 ```
 solver/              pure scheduling engine, no I/O, no time.Now()
-input/todotxt/       task source: todo.txt
+input/taskjson/      task source: JSON task file
 input/ics/           calendar source: ICS fixed events
 cmd/daysolve/        CLI
 testdata/scenarios/  input + expected-schedule fixtures
