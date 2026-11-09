@@ -70,3 +70,25 @@ func TestScenarios(t *testing.T) {
 		})
 	}
 }
+
+// TestScenariosAreDeterministic solves every scenario repeatedly and requires
+// byte-identical output each time.
+func TestScenariosAreDeterministic(t *testing.T) {
+	problems, err := filepath.Glob(scenarioGlob)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(problems) == 0 {
+		t.Fatalf("no scenarios match %s", scenarioGlob)
+	}
+	for _, problem := range problems {
+		t.Run(filepath.Base(filepath.Dir(problem)), func(t *testing.T) {
+			first := solveFile(t, problem)
+			for range 10 {
+				if again := solveFile(t, problem); !bytes.Equal(first, again) {
+					t.Fatalf("output changed between runs\nfirst:\n%s\nagain:\n%s", first, again)
+				}
+			}
+		})
+	}
+}
