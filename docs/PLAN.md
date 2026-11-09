@@ -94,7 +94,7 @@ change the decision here in the same commit that changes the code.
 
 Each one should land as several small commits with tests.
 
-### 1. Solver core
+### 1. Solver core (done)
 
 - Types above in `solver/`.
 - Free-interval calculation: working hours minus fixed events and breaks.

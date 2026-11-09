@@ -3,8 +3,9 @@
 A constraint-based day planner: it takes your task list and calendar, produces a
 timeboxed schedule, and replans when reality disagrees.
 
-> Status: early. The design is in [docs/PLAN.md](docs/PLAN.md) and the engine is
-> being built first. Nothing below works yet.
+> Status: early. The design is in [docs/PLAN.md](docs/PLAN.md). The scheduling
+> engine in `solver/` works as a Go package. There is no CLI yet, so the
+> commands below do not work.
 
 ## Why
 
