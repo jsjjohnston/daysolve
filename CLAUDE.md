@@ -3,8 +3,9 @@
 A constraint-based day planner. It takes a task list and a calendar, produces a
 timeboxed schedule, and replans when the day does not go to plan.
 
-Status: nothing is implemented yet. `docs/PLAN.md` has the build order and the
-design decisions already made. Start at the first unfinished milestone.
+Status: milestone 1 (solver core) is implemented. `docs/PLAN.md` has the build
+order and the design decisions already made. Start at the first unfinished
+milestone.
 
 ## What this is not
 
