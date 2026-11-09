@@ -8,7 +8,7 @@ design decisions already made. Start at the first unfinished milestone.
 
 ## What this is not
 
-daysolve is not a to-do app, and the code must never drift into one.
+daysolve is not a task manager, and the code must never drift into one.
 
 - It does not store, create, edit or complete tasks. Tasks are read from sources
   that already exist (a JSON task file first, later Markdown or GitHub issues).

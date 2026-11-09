@@ -27,7 +27,7 @@ the re-placing for you.
 
 daysolve does not store or manage tasks. It reads them from the tool you already
 use (a JSON task file first) and reads fixed events from an ICS calendar. It is a
-planner that consumes to-do lists, not another one.
+planner that consumes task lists, not another task manager.
 
 ## Planned usage
 

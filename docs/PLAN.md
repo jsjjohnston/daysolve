@@ -150,7 +150,7 @@ Each one should land as several small commits with tests.
   unscheduled that a different order would place, mostly when earliest-start
   times are involved; keep a scenario that shows it.
 - Energy levels: prefer deep work in the user's stated high-energy hours.
-- More task sources: Markdown checklists, GitHub issues, Todoist.
+- More task sources: Markdown checklists, GitHub issues, other task tools.
 
 ## Test approach
 
