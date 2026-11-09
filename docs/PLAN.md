@@ -27,8 +27,8 @@ change the decision here in the same commit that changes the code.
 
 - **Splitting.** A task stays whole unless it has a minimum chunk. A split task
   has no piece shorter than the minimum chunk, including the last piece.
-- **Priority.** A number, lower is more important. Readers map their own scheme
-  onto it (todo.txt `(A)` = 1 … `(Z)` = 26, no priority = 27).
+- **Priority.** A number, lower is more important. A task with no priority
+  sorts after every task that has one.
 - **Ordering.** Deadline, then priority, then input order. Input order is the
   final tie-break, so the order is total and the output is deterministic.
 - **Buffer.** A `Day` setting, default 0. It applies between two boxes and
@@ -46,15 +46,29 @@ change the decision here in the same commit that changes the code.
 
 ### Inputs
 
-- **Task ID.** An explicit `id:` tag wins. Otherwise the ID is a short hash of
-  the task text with the completion mark, priority, dates and `key:value` tags
-  removed. Two tasks with the same hash get `-2`, `-3` … in file order. Line
-  numbers are never used, because they shift when the file is edited.
-- **No estimate.** A task without `est:` is returned unscheduled with the reason
-  "no estimate". The reader never guesses a duration.
-- **Date-only deadline.** `due:2026-11-10` means the end of working hours on
-  that date, in the `Day` location. A deadline before the planned day makes the
-  task unscheduled with the reason "deadline passed".
+- **Task source.** A JSON file holding an array of task objects. Fields: `id`,
+  `title`, `estimate`, `priority`, `deadline`, `earliest_start`, `min_chunk`,
+  `tags`, `done`. Durations are Go duration strings (`"45m"`, `"1h30m"`). Only
+  `id` and `title` are required. An unknown field is an error, so a typo is
+  never ignored. Field names match the scenario format where they overlap.
+
+  ```json
+  [
+    {"id": "report", "title": "Write Q4 report", "estimate": "1h30m",
+     "priority": 1, "deadline": "2026-11-10", "min_chunk": "30m",
+     "tags": ["writing"]},
+    {"id": "inbox", "title": "Clear inbox", "estimate": "20m", "done": true}
+  ]
+  ```
+- **Task ID.** The `id` field. A missing or repeated ID is an error when the
+  file is read. Array position is never used as an identity, because it shifts
+  when the file is edited.
+- **No estimate.** A task without `estimate` is returned unscheduled with the
+  reason "no estimate". The reader never guesses a duration.
+- **Deadline.** Either an RFC 3339 time with an offset, or a date. A date such
+  as `"2026-11-10"` means the end of working hours on that date, in the `Day`
+  location. A deadline before the planned day makes the task unscheduled with
+  the reason "deadline passed".
 - **Clock times on the command line.** `--now 14:20` is read in the `Day`
   location on the planned date. A time that does not exist or occurs twice
   because of a DST change is rejected with a message asking for an offset
@@ -72,8 +86,8 @@ change the decision here in the same commit that changes the code.
   fixtures (milestone 2) use it directly, so they do not wait for the readers.
 - **Where replan state lives.** `plan` writes the schedule to a JSON file
   (`--out`, default `.daysolve/<date>.json`). `replan` reads that file.
-- **What actually happened.** Completion is read from the task source (a
-  todo.txt line marked `x`). Partial progress is passed to `replan` as
+- **What actually happened.** Completion is read from the task source (a task
+  with `"done": true`). Partial progress is passed to `replan` as
   `--spent <id>=30m`. daysolve never writes to the task source.
 
 ## Milestones
@@ -101,8 +115,8 @@ Each one should land as several small commits with tests.
 
 ### 3. CLI
 
-- `daysolve plan --tasks todo.txt --calendar day.ics --date 2026-11-10`
-- todo.txt reader (estimate and deadline from tags such as `est:45m due:2026-11-10`).
+- `daysolve plan --tasks tasks.json --calendar day.ics --date 2026-11-10`
+- JSON task reader, as specified under Decisions.
 - ICS reader for fixed events, within the scope under Decisions.
 - Plain-text schedule output, plus `--json`.
 - `plan` writes the schedule state file that `replan` reads.
