@@ -3,8 +3,8 @@
 A constraint-based day planner. It takes a task list and a calendar, produces a
 timeboxed schedule, and replans when the day does not go to plan.
 
-Status: nothing is implemented yet. `docs/PLAN.md` has the build order. Start at
-the first unfinished milestone.
+Status: nothing is implemented yet. `docs/PLAN.md` has the build order and the
+design decisions already made. Start at the first unfinished milestone.
 
 ## What this is not
 
@@ -39,15 +39,23 @@ docs/PLAN.md         milestones and design notes
 - All times carry a location. No naive local times.
 - A task that cannot be placed is returned as unscheduled with a reason. The
   solver never drops a task silently and never violates a constraint to fit one.
+- Ordering is total: ties break on input order. Never build output by ranging
+  over a map.
+- The solver sees one duration per task, the *effective estimate*. Callers
+  compute it (raw estimate, adjusted by calibration, minus time already spent).
+  The solver never adjusts it.
 
 ## Invariants (every schedule, enforced by property tests)
 
-1. No two boxes overlap.
+1. No two boxes overlap, and neighbouring boxes are at least the day's buffer
+   apart (default 0).
 2. Fixed calendar events never move and no box overlaps one.
 3. Every box sits inside working hours and outside declared breaks.
 4. No box for a task ends after that task's deadline.
-5. Box time for a scheduled task adds up to its estimate.
-6. Replanning never changes anything before "now".
+5. Box time for a scheduled task adds up to its effective estimate. A split
+   task has no piece shorter than its minimum chunk.
+6. The solver never emits or changes a box that starts before "now". What
+   happened before "now" is input, not output.
 
 ## Working conventions
 
