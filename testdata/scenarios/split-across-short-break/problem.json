@@ -1,0 +1,14 @@
+{
+  "day": {
+    "zone": "Europe/London",
+    "start": "2026-11-10T09:00:00Z",
+    "end": "2026-11-10T17:00:00Z",
+    "breaks": [
+      {"start": "2026-11-10T10:00:00Z", "end": "2026-11-10T10:05:00Z"}
+    ],
+    "buffer": "15m"
+  },
+  "tasks": [
+    {"id": "report", "title": "Write report", "estimate": "2h", "min_chunk": "30m"}
+  ]
+}

@@ -83,6 +83,29 @@ func TestSolveSplitsTasks(t *testing.T) {
 			wantUnscheduled: []string{},
 		},
 		{
+			name: "pieces either side of a short break keep the buffer between them",
+			p: Problem{
+				Day:   Day{Start: at("09:00"), End: at("17:00"), Breaks: []Interval{span("10:00", "10:05")}, Buffer: 15 * m},
+				Tasks: []Task{{ID: "a", Estimate: 2 * h, MinChunk: 30 * m}},
+			},
+			wantBoxes:       []string{"a 09:00-10:00", "a 10:15-11:15"},
+			wantUnscheduled: []string{},
+		},
+		{
+			name: "a slot too short once the buffer is taken off is skipped",
+			p: Problem{
+				Day: Day{
+					Start:  at("09:00"),
+					End:    at("17:00"),
+					Breaks: []Interval{span("10:00", "10:05"), span("10:40", "11:00")},
+					Buffer: 15 * m,
+				},
+				Tasks: []Task{{ID: "a", Estimate: 2 * h, MinChunk: 30 * m}},
+			},
+			wantBoxes:       []string{"a 09:00-10:00", "a 11:00-12:00"},
+			wantUnscheduled: []string{},
+		},
+		{
 			name: "a split that cannot finish takes no time at all",
 			p: Problem{
 				Day:    workday(),

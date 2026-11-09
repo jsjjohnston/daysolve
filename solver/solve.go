@@ -22,7 +22,7 @@ func Solve(p Problem) (Schedule, error) {
 	boxes := []Box{}
 	reasons := make(map[string]Reason)
 	for _, t := range ordered(p.Tasks) {
-		pieces, reason := place(t, free, start)
+		pieces, reason := place(t, free, start, p.Day.Buffer)
 		if reason != "" {
 			reasons[t.ID] = reason
 			continue
@@ -47,17 +47,17 @@ func Solve(p Problem) (Schedule, error) {
 
 // place finds time for one task in the free intervals. It returns either the
 // pieces to box or the reason the task cannot be scheduled.
-func place(t Task, free []Interval, start time.Time) ([]Interval, Reason) {
+func place(t Task, free []Interval, start time.Time, buffer time.Duration) ([]Interval, Reason) {
 	if t.Estimate == 0 {
 		return nil, ReasonNoEstimate
 	}
 	if !t.Deadline.IsZero() && !t.Deadline.After(start) {
 		return nil, ReasonDeadlinePassed
 	}
-	if pieces := fit(t, window(free, t.EarliestStart, t.Deadline)); pieces != nil {
+	if pieces := fit(t, window(free, t.EarliestStart, t.Deadline), buffer); pieces != nil {
 		return pieces, ""
 	}
-	if !t.Deadline.IsZero() && fit(t, window(free, t.EarliestStart, time.Time{})) != nil {
+	if !t.Deadline.IsZero() && fit(t, window(free, t.EarliestStart, time.Time{}), buffer) != nil {
 		return nil, ReasonDeadlineUnreachable
 	}
 	return nil, ReasonNoRoom
@@ -84,9 +84,9 @@ func window(free []Interval, earliest, deadline time.Time) []Interval {
 // fit returns the pieces for the task in the given slots, or nil if it does
 // not fit. A task is split only when it has a minimum chunk and is longer
 // than that chunk.
-func fit(t Task, slots []Interval) []Interval {
+func fit(t Task, slots []Interval, buffer time.Duration) []Interval {
 	if t.MinChunk > 0 && t.Estimate > t.MinChunk {
-		return fitSplit(t, slots)
+		return fitSplit(t, slots, buffer)
 	}
 	return fitWhole(t, slots)
 }
