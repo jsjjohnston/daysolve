@@ -26,13 +26,13 @@ the re-placing for you.
 ## What it is not
 
 daysolve does not store or manage tasks. It reads them from the tool you already
-use (todo.txt first) and reads fixed events from an ICS calendar. It is a
+use (a JSON task file first) and reads fixed events from an ICS calendar. It is a
 planner that consumes to-do lists, not another one.
 
 ## Planned usage
 
 ```
-daysolve plan   --tasks todo.txt --calendar day.ics --date 2026-11-10
+daysolve plan   --tasks tasks.json --calendar day.ics --date 2026-11-10
 daysolve replan --now 14:20
 ```
 
