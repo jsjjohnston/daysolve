@@ -3,7 +3,7 @@
 A constraint-based day planner. It takes a task list and a calendar, produces a
 timeboxed schedule, and replans when the day does not go to plan.
 
-Status: milestones 1 and 2 (solver core, scenarios and property tests) are
+Status: milestones 1 to 3 (solver core, scenarios and property tests, CLI) are
 implemented. `docs/PLAN.md` has the build order and the design decisions
 already made. Start at the first unfinished milestone.
 
@@ -29,7 +29,9 @@ solver/              pure scheduling engine, no I/O, no time.Now()
 scenario/            JSON form of problems and schedules; golden tests
 input/taskjson/      task source: JSON task file
 input/ics/           calendar source: ICS fixed events
-cmd/daysolve/        CLI
+config/              settings file: working hours, breaks, buffer, zone
+internal/clock/      times of day and dates, resolved to instants in a zone
+cmd/daysolve/        CLI: plan, config
 testdata/scenarios/  <name>/problem.json + expected <name>/schedule.json
 docs/PLAN.md         milestones and design notes
 ```

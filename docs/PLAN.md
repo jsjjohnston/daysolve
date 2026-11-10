@@ -73,11 +73,18 @@ change the decision here in the same commit that changes the code.
   location on the planned date. A time that does not exist or occurs twice
   because of a DST change is rejected with a message asking for an offset
   (`14:20+01:00`).
-- **ICS scope.** Read `VEVENT`s with UTC or `TZID` times. Ignore all-day,
-  cancelled, declined and `TRANSP:TRANSPARENT` events. A recurring event
-  (`RRULE`) that the reader cannot expand is an error, never a silent skip.
-  Recurrence is where a dependency may earn its place: decide at milestone 3,
+- **ICS scope.** The reader uses only the standard library. It reads `VEVENT`s
+  with UTC, `TZID` or floating times; a floating time is read in the `Day`
+  location. It ignores all-day, cancelled and `TRANSP:TRANSPARENT` events. A
+  `TZID` that is not an IANA zone name is an error.
+- **Recurring events.** Not expanded yet. A recurring event (`RRULE` or
+  `RDATE`) that starts before the end of the planned day stops `plan` with an
+  error, because a repeat might fall on the day. One that starts later is
+  skipped safely. Whether to expand recurrence with a dependency is decided
   after trying a real calendar export.
+- **Declined events.** Not ignored yet. Telling a declined invitation apart
+  needs the user's own address, which daysolve does not have. Until then a
+  declined event blocks time like any other.
 
 ### State
 
@@ -86,6 +93,17 @@ change the decision here in the same commit that changes the code.
   fixtures (milestone 2) use it directly, so they do not wait for the readers.
 - **Where replan state lives.** `plan` writes the schedule to a JSON file
   (`--out`, default `.daysolve/<date>.json`). `replan` reads that file.
+- **Config file.** One JSON file holds `zone`, `work_start`, `work_end`,
+  `breaks`, `buffer`, `tasks` and `calendar`. It is found by `--config`, then
+  `DAYSOLVE_CONFIG`, then `daysolve/config.json` in the user config directory.
+  It is managed with `daysolve config show|set|init|path`. With no file the
+  defaults apply: 09:00 to 17:00 in the machine's zone (`"Local"`), a break
+  from 12:00 to 13:00, no buffer, tasks in `tasks.json`, no calendar.
+- **`plan` covers the whole day.** It does not use the current time, so
+  planning today at 11:00 still fills 09:00 onward. Planning from "now" is
+  `replan` (milestone 4).
+- **Done tasks.** A task with `"done": true` is left out of the plan and of
+  the output.
 - **What actually happened.** Completion is read from the task source (a task
   with `"done": true`). Partial progress is passed to `replan` as
   `--spent <id>=30m`. daysolve never writes to the task source.
@@ -113,9 +131,10 @@ Each one should land as several small commits with tests.
   six invariants in `CLAUDE.md`.
 - Determinism test: same input twice gives byte-identical output.
 
-### 3. CLI
+### 3. CLI (done)
 
 - `daysolve plan --tasks tasks.json --calendar day.ics --date 2026-11-10`
+- `daysolve config show|set|init|path` to manage the config file.
 - JSON task reader, as specified under Decisions.
 - ICS reader for fixed events, within the scope under Decisions.
 - Plain-text schedule output, plus `--json`.
