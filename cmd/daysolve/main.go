@@ -14,12 +14,14 @@ import (
 const usage = `daysolve plans a day from a task file and a calendar.
 
 Usage:
+  daysolve plan [flags]              plan a day and print the schedule
   daysolve config show               print the settings in use
   daysolve config set <key> <value>  change one setting
   daysolve config init [--force]     write a config file holding the defaults
   daysolve config path               print where the config file is
   daysolve help                      print this message
 
+Run "daysolve plan -h" for the plan flags.
 Settings: zone, work_start, work_end, breaks, buffer, tasks, calendar.
 Every command accepts --config <file>; DAYSOLVE_CONFIG names one too.
 `
@@ -43,6 +45,8 @@ func run(args []string, stdout, stderr io.Writer, now time.Time) int {
 		return exitUsage
 	}
 	switch args[0] {
+	case "plan":
+		return runPlan(args[1:], stdout, stderr, now)
 	case "config":
 		return runConfig(args[1:], stdout, stderr)
 	case "help", "-h", "-help", "--help":

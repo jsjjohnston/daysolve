@@ -34,3 +34,6 @@ go.work.sum
 
 # Built CLI binary
 /daysolve
+
+# Saved schedules written by `daysolve plan`
+.daysolve/
